@@ -6,11 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import br.com.rodrigo.picpaycover.R
 import br.com.rodrigo.picpaycover.data.Transacao
-import br.com.rodrigo.picpaycover.extension.formatar
 import br.com.rodrigo.picpaycover.extension.formatarMoeda
 import kotlinx.android.synthetic.main.item_transacao.view.*
 
-class HomeAdapter(val transacoes: List<Transacao>) :
+class HomeAdapter(private val transacoes: List<Transacao> = listOf()) :
     RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,8 +36,9 @@ class HomeAdapter(val transacoes: List<Transacao>) :
                 textViewOrigem.text = transacao.origem.nomeCompleto
                 textViewDestino.text = transacao.destino.nomeCompleto
                 textViewValor.text = transacao.valor.formatarMoeda()
-                textViewData.text = transacao.dataHora.formatar()
-                textViewCirculo.text = transacao.origem.nomeCompleto.first().toUpperCase().toString()
+                textViewData.text = transacao.dataHora
+                textViewCirculo.text =
+                    transacao.origem.nomeCompleto.first().toUpperCase().toString()
             }
         }
     }

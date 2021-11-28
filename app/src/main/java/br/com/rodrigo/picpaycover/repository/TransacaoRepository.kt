@@ -1,8 +1,7 @@
 package br.com.rodrigo.picpaycover.repository
 
-import br.com.rodrigo.picpaycover.data.Transacao
-import br.com.rodrigo.picpaycover.data.TransacaoDAO
-import br.com.rodrigo.picpaycover.data.Usuario
+import br.com.rodrigo.picpaycover.data.*
+import br.com.rodrigo.picpaycover.services.ApiService
 
 interface TransacaoRepository {
 

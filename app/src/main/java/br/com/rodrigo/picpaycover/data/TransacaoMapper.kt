@@ -1,5 +1,6 @@
 package br.com.rodrigo.picpaycover.data
 
+
 fun TransacaoNetwork.toModel(): Transacao = Transacao(
     codigo = codigo.orEmpty(),
     origem = origem ?: Usuario(),
@@ -21,4 +22,5 @@ fun Transacao.toLocal(): TransacaoLocal = TransacaoLocal(
     isCartaoCredito = isCartaoCredito,
     valor = valor
 )
+
 fun List<Transacao>.toLocal() = this.map { it.toLocal() }

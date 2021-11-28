@@ -4,57 +4,112 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_home.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import org.koin.android.viewmodel.ext.android.viewModel
+import br.com.rodrigo.picpaycover.Componentes
+import br.com.rodrigo.picpaycover.ComponentesViewModel
 import br.com.rodrigo.picpaycover.R
+import br.com.rodrigo.picpaycover.data.State
 import br.com.rodrigo.picpaycover.data.Transacao
+import br.com.rodrigo.picpaycover.data.UsuarioLogado
+import br.com.rodrigo.picpaycover.extension.desaparecer
+import br.com.rodrigo.picpaycover.extension.esconder
 import br.com.rodrigo.picpaycover.extension.formatarMoeda
-import br.com.rodrigo.picpaycover.ui.login.LoginViewModel
-
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.fragment_pagar.*
-
+import br.com.rodrigo.picpaycover.extension.mostrar
+import kotlinx.android.synthetic.main.fragment_home.*
+import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment() {
 
+    private val componentesViewModel: ComponentesViewModel by sharedViewModel()
     private val homeViewModel: HomeViewModel by viewModel()
-    private val loginViewModel: LoginViewModel by viewModel()
     private val controlador by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
-        @@ -22,15 +29,31 @@ class HomeFragment : Fragment() {
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_home, container, false)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (loginViewModel.isUsuarioNaoLogado()) {
-            val direcao = HomeFragmentDirections.actionGlobalNavigationLogin()
-            controlador.navigate(direcao)
-            return;
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val navView = activity?.findViewById<BottomNavigationView>(R.id.nav_view)
-        navView?.visibility = View.VISIBLE
-        observarSaldo()
-        configuraRecyclerView()
+        componentesViewModel.temComponentes = Componentes(bottomNavigation = true)
+        if (UsuarioLogado.isNaoLogado()) {
+            val direcao = HomeFragmentDirections.actionGlobalLoginFragment()
+            controlador.navigate(direcao)
+            return
+        }
+        observarEstadoSaldo()
+        observarEstadoTransacoes()
     }
 
-    private fun configuraRecyclerView() {
-        val mockLista = listOf(Transacao("1", valor = 10.0), Transacao("2", valor = 20.0))
-        recyclerView.adapter = HomeAdapter(mockLista)
-    }
-
-    private fun observarSaldo() {
-        homeViewModel.saldo.observe(viewLifecycleOwner, Observer {
-            textViewSaldo.text = it.formatarMoeda()
+    private fun observarEstadoTransacoes() {
+        homeViewModel.transacaoState.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is State.Loading -> {
+                    mostrarProgresTransacao()
+                }
+                is State.Success -> {
+                    esconderProgresTransacao()
+                    configuraRecyclerView(it.data)
+                }
+                is State.Error -> {
+                    esconderProgresTransacao()
+                    configuraRecyclerView(mutableListOf())
+                    Toast.makeText(this.context, it.error.message, Toast.LENGTH_SHORT).show()
+                }
+            }
         })
     }
+
+    private fun observarEstadoSaldo() {
+        homeViewModel.saldoState.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is State.Loading -> {
+                    mostrarProgresSaldo()
+                }
+                is State.Success -> {
+                    esconderProgresSaldo()
+                    textViewSaldo.text = it.data.formatarMoeda()
+                }
+                is State.Error -> {
+                    esconderProgresSaldo()
+                    Toast.makeText(this.context, it.error.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+    }
+
+    private fun esconderProgresSaldo() {
+        progressBarSaldo.desaparecer()
+        textViewSaldo.mostrar()
+        textViewLabelSaldo.mostrar()
+    }
+
+    private fun mostrarProgresSaldo() {
+        progressBarSaldo.mostrar()
+        textViewSaldo.esconder()
+        textViewLabelSaldo.esconder()
+    }
+
+
+    private fun mostrarProgresTransacao() {
+        progressBarTransferencia.mostrar()
+        recyclerView.desaparecer()
+    }
+
+    private fun esconderProgresTransacao() {
+        progressBarTransferencia.desaparecer()
+        recyclerView.mostrar()
+    }
+
+    private fun configuraRecyclerView(transferencais: List<Transacao>) {
+        recyclerView.adapter = HomeAdapter(transferencais)
+    }
+
 }

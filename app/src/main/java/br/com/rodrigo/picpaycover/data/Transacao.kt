@@ -2,7 +2,6 @@ package br.com.rodrigo.picpaycover.data
 
 import java.util.*
 
-
 data class Transacao(
     val codigo: String = "",
     val origem: Usuario = Usuario(),

@@ -20,4 +20,5 @@ interface TransacaoDAO {
 
     @Update
     fun update(transacao: TransacaoLocal)
+
 }

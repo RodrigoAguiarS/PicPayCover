@@ -1,14 +1,50 @@
 package br.com.rodrigo.picpaycover.ui.home
 
-import androidx.lifecycle.LiveData
+
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import br.com.rodrigo.picpaycover.data.State
+import br.com.rodrigo.picpaycover.data.Transacao
+import br.com.rodrigo.picpaycover.data.UsuarioLogado
+import br.com.rodrigo.picpaycover.repository.TransacaoRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(private val repository: TransacaoRepository) : ViewModel() {
 
-    class HomeViewModel : ViewModel() {
+    val saldoState = MutableLiveData<State<Double>>()
+    val transacaoState = MutableLiveData<State<List<Transacao>>>()
 
-        private val _saldo = MutableLiveData(0.0)
-        val saldo: LiveData<Double> = _saldo
+    init {
+        val login = UsuarioLogado.usuario.login
+        obterSaldo(login)
+        obterHistorico(login)
     }
+
+    private fun obterHistorico(login: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            transacaoState.postValue(State.Loading())
+            try {
+                val historico = repository.getTransacoes(login)
+                transacaoState.postValue(State.Success(historico))
+            } catch (e: Exception) {
+                transacaoState.postValue(State.Error(e))
+            }
+        }
+    }
+
+    private fun obterSaldo(login: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            saldoState.postValue(State.Loading())
+            try {
+                val novoSaldo = repository.getSaldo(login).saldo
+                UsuarioLogado.setSaldo(novoSaldo)
+                saldoState.postValue(State.Success(novoSaldo))
+            } catch (e: Exception) {
+                saldoState.postValue(State.Error(e))
+            }
+        }
+    }
+
 }

@@ -8,7 +8,7 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        applicationId "br.com.dio.picpayclone"
+        applicationId "br.com.rodrigo.picpaycover"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1

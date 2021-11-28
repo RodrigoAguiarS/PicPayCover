@@ -1,43 +1,67 @@
 package br.com.rodrigo.picpaycover.ui.login
 
+
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import br.com.dio.picpayclone.ui.login.LoginFragmentDirections
+import br.com.rodrigo.picpaycover.extension.getString
+import br.com.rodrigo.picpaycover.Componentes
+import br.com.rodrigo.picpaycover.ComponentesViewModel
 import br.com.rodrigo.picpaycover.R
-import br.com.rodrigo.picpaycover.data.Usuario
-import br.com.rodrigo.picpaycover.data.UsuarioLogado
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import br.com.rodrigo.picpaycover.data.Login
+import br.com.rodrigo.picpaycover.data.State
+import br.com.rodrigo.picpaycover.extension.esconder
+import br.com.rodrigo.picpaycover.extension.mostrar
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_login.*
+import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class LoginFragment : Fragment() {
+class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    private val controlador by lazy { findNavController() }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_login, container, false)
-    }
+    private val componentesViewModel: ComponentesViewModel by sharedViewModel()
+    private val viewModel: LoginViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val navView = activity?.findViewById<BottomNavigationView>(R.id.nav_view)
-        navView?.visibility = GONE
-        configuraLogin()
+        componentesViewModel.temComponentes = Componentes(bottomNavigation = false)
+        configurarBotaoLogin()
+        observarEstadosUsuario()
     }
 
-    private fun configuraLogin() {
-        button.setOnClickListener {
-            UsuarioLogado.usuario = Usuario("teste", "teste")
-            val direcao = LoginFragmentDirections.actionLoginFragmentToNavigationHome()
-            controlador.navigate(direcao)
+    private fun observarEstadosUsuario() {
+        viewModel.usuarioState.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is State.Loading<*> -> {
+                    progressBar.mostrar()
+                }
+                is State.Success<*> -> {
+                    progressBar.esconder()
+                    val direcao = LoginFragmentDirections.actionLoginFragmentToNavigationHome()
+                    findNavController().navigate(direcao)
+                }
+                is State.Error<*> -> {
+                    progressBar.esconder()
+                    Toast.makeText(
+                        requireContext(),
+                        "Falha ao autenticar",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        })
+    }
+
+    private fun configurarBotaoLogin() {
+        buttonLogin.setOnClickListener {
+            val usuario = textInputLayoutUsuario.getString()
+            val senha = textInputLayoutSenha.getString()
+            val login = Login(usuario, senha)
+            viewModel.login(login)
         }
     }
+
 }

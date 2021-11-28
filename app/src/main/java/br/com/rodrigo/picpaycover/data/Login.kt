@@ -1,6 +1,6 @@
 package br.com.rodrigo.picpaycover.data
 
 data class Login(
-    val login: String,
+    val usuario: String,
     val senha: String
 )

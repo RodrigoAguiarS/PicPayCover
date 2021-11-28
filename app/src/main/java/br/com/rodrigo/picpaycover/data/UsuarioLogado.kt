@@ -2,8 +2,16 @@ package br.com.rodrigo.picpaycover.data
 
 object UsuarioLogado {
 
-    var usuario: Usuario? = null
+    lateinit var token: Token
 
-    fun isUsuarioLogado() = usuario !== null
+    lateinit var usuario: Usuario
+
+    fun setSaldo(saldo: Double) {
+        usuario.saldo = saldo
+    }
+
+    fun isLogado(): Boolean = this::token.isInitialized
+
+    fun isNaoLogado(): Boolean = !isLogado()
 
 }

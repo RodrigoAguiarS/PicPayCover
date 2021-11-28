@@ -26,17 +26,17 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_ajuste"
-        android:name="br.com.dio.picpayclone.ui.ajuste.AjusteFragment"
+        android:name="br.com.rodrigo.picpaycover.ui.ajuste.AjusteFragment"
         android:label="@string/title_ajustes"
         tools:layout="@layout/fragment_ajuste" />
     <fragment
         android:id="@+id/navigation_transferencia"
-        android:name="br.com.dio.picpayclone.ui.transacao.TransacaoFragment"
+        android:name="br.com.rodrigo.picpaycover.ui.transacao.TransacaoFragment"
         android:label="Transferencia"
         tools:layout="@layout/fragment_transferencia">
         <argument
             android:name="usuario"
-            app:argType="br.com.dio.picpayclone.data.Usuario" />
+            app:argType="br.com.rodrigo.picpaycover.data.Usuario" />
         <action
             android:id="@+id/action_navigation_transferencia_to_navigation_pagar"
             app:destination="@id/navigation_pagar"
