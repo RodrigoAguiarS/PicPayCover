@@ -1,14 +1,16 @@
 package br.com.rodrigo.picpaycover.data
 
-import java.util.*
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Usuario(
-    val login: String,
-    val senha: String,
+    val login: String = "",
+    val senha: String = "",
     val email: String = "",
-    val nomeCompleto: String = "teste",
+    val nomeCompleto: String = "",
     val cpf: String = "",
-    val dataNascimento: Calendar = Calendar.getInstance(),
+    val dataNascimento: String = "",
     val numeroTelefone: String = "",
-    val saldo: Double = 1000.0
-)
+    var saldo: Double = 0.0
+) : Parcelable

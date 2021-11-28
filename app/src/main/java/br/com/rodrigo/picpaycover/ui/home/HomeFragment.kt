@@ -15,6 +15,7 @@ import br.com.rodrigo.picpaycover.extension.formatarMoeda
 import br.com.rodrigo.picpaycover.ui.login.LoginViewModel
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.fragment_pagar.*
 
 
 class HomeFragment : Fragment() {

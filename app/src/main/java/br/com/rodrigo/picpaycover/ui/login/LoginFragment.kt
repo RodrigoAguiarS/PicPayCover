@@ -7,6 +7,7 @@ import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import br.com.dio.picpayclone.ui.login.LoginFragmentDirections
 import br.com.rodrigo.picpaycover.R
 import br.com.rodrigo.picpaycover.data.Usuario
 import br.com.rodrigo.picpaycover.data.UsuarioLogado

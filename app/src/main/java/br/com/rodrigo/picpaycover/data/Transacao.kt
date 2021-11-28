@@ -1,11 +1,18 @@
 package br.com.rodrigo.picpaycover.data
+
 import java.util.*
 
+
 data class Transacao(
-    val codigo: String,
-    val origem: Usuario = Usuario("teste", "teste"),
-    val destino: Usuario =  Usuario("teste", "teste"),
-    val dataHora: Calendar = Calendar.getInstance(),
-    val valor: Double,
+    val codigo: String = "",
+    val origem: Usuario = Usuario(),
+    val destino: Usuario = Usuario(),
+    val dataHora: String = "",
+    val isCartaoCredito: Boolean = false,
+    val valor: Double = 0.0,
     val cartaoCredito: CartaoCredito = CartaoCredito()
-)
+) {
+    companion object {
+        fun gerarHash(): String = UUID.randomUUID().toString()
+    }
+}
